@@ -5,7 +5,29 @@ Script para transcribir archivos de audio a texto usando OpenAI Whisper.
 ## Requisitos
 
 - Python 3.8+
+- FFmpeg
 - OpenAI Whisper
+
+### Instalar FFmpeg
+
+```bash
+# on Ubuntu or Debian
+sudo apt update && sudo apt install ffmpeg
+
+# on Arch Linux
+sudo pacman -S ffmpeg
+
+# on MacOS using Homebrew (https://brew.sh/)
+brew install ffmpeg
+
+# on Windows using Chocolatey (https://chocolatey.org/)
+choco install ffmpeg
+
+# on Windows using Scoop (https://scoop.sh/)
+scoop install ffmpeg
+```
+
+### Instalar Whisper
 
 ```bash
 pip install -U openai-whisper
