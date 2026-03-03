@@ -1,6 +1,6 @@
-# Transcriptor de Audios con Whisper
+# Transcriptor de Audios y Videos con Whisper
 
-Script para transcribir archivos de audio a texto usando OpenAI Whisper.
+Script para transcribir archivos de audio/video a texto usando OpenAI Whisper.
 
 ## Requisitos
 
@@ -35,7 +35,7 @@ pip install -U openai-whisper
 
 ## Uso
 
-### Transcribir todos los audios de una carpeta
+### Transcribir todos los archivos soportados de una carpeta
 
 ```bash
 python3 transcribir_tickets.py --all ./audios --out ./tickets_out --model turbo --language es
@@ -45,6 +45,12 @@ python3 transcribir_tickets.py --all ./audios --out ./tickets_out --model turbo 
 
 ```bash
 python3 transcribir_tickets.py --file ./audios/mi_audio.ogg --out ./tickets_out --model turbo --language es
+```
+
+### Transcribir un video específico
+
+```bash
+python3 transcribir_tickets.py --file ./videos/mi_video.mp4 --out ./tickets_out --model turbo --language es
 ```
 
 ## Parámetros
@@ -59,13 +65,24 @@ python3 transcribir_tickets.py --file ./audios/mi_audio.ogg --out ./tickets_out 
 | `--date <YYYY-MM-DD>` | Fecha para la carpeta de salida | Fecha actual |
 | `--start <número>` | Número inicial para INC (ej: 5) | Auto |
 | `--no-title-from-text` | No usar el texto transcrito para el nombre de carpeta | - |
+| `--keep-extracted-audio` | Guarda audio extraído (solo para video) junto al original | `false` |
 | `--quiet` | Menos logs en consola | - |
 
 > Nota: `--all` y `--file` son mutuamente excluyentes (usar uno u otro).
 
-## Formatos de audio soportados
+## Formatos soportados
 
+Audio:
 - `.mp3`, `.wav`, `.m4a`, `.ogg`, `.flac`, `.aac`, `.wma`, `.webm`
+
+Video:
+- `.mp4`, `.mkv`, `.mov`, `.avi`, `.m4v`, `.webm`
+
+### Nota sobre `.webm`
+
+- `.webm` puede ser audio-only o video.
+- Si `ffprobe` está disponible, el script detecta si hay stream de video.
+- Si `ffprobe` no está, intenta extraer audio con `ffmpeg`; si falla, intenta transcribir directo como audio.
 
 ## Estructura de salida
 
@@ -82,8 +99,9 @@ tickets_out/
 ```
 
 Cada carpeta contiene:
-- Copia del archivo de audio original
-- Archivo `.txt` con la transcripción (mismo nombre que el audio)
+- Copia del archivo original (audio o video)
+- Archivo `.txt` con la transcripción (mismo stem que el archivo original)
+- Opcionalmente, audio extraído (`--keep-extracted-audio`) cuando el input es video
 
 ## Ejemplos
 
@@ -103,4 +121,26 @@ Continuar numeración desde INC-010:
 
 ```bash
 python3 transcribir_tickets.py --all ./audios --out ./tickets_out --start 10
+```
+
+Transcribir videos de una carpeta:
+
+```bash
+python3 transcribir_tickets.py --all ./videos --out ./tickets_out --model turbo --language es
+```
+
+Mantener audio extraído para depuración:
+
+```bash
+python3 transcribir_tickets.py --file ./videos/mi_video.mkv --out ./tickets_out --keep-extracted-audio
+```
+
+## Tests manuales rápidos
+
+```bash
+# 1) Archivo único de video
+python3 transcribir_tickets.py --file ./videos/video.mp4 --out ./tickets_out
+
+# 2) Lote de carpeta (audio + video)
+python3 transcribir_tickets.py --all ./videos --out ./tickets_out
 ```
